@@ -1,0 +1,21 @@
+{
+    "$schema": "../../../system/schema/extend.json",
+    "name": "Tweaker",
+    "description": "Various system improvements",
+    "version": "1.0.0",
+    "api": "^8.0",
+    "url": "https://jdanek.eu",
+    "class": "TweakerPlugin",
+    "langs": {
+        "tweaker": "Resources/languages/"
+    },
+    "events": [
+        {"event": "admin.page.editscript", "method": "onPageEditScript"}
+    ],
+    "events.web": [
+        {"event": "tpl.backlink", "method": "onShowBacklink"}
+    ],
+    "events.admin": [
+        {"event": "admin.style", "method": "onTweakerStyle"}
+    ]
+}
