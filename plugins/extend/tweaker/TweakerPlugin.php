@@ -31,14 +31,20 @@ class TweakerPlugin extends ExtendPlugin
     public function onShowBacklink(array $args): void
     {
         if ($this->getConfig()->offsetGet('page_show_backlinks')) {
-            global $_index, $_page;
+            global $_index, $_page, $_article;
 
+            // pages
             if (($_index->type === WebState::PAGE || $_index->type === WebState::PLUGIN)
                 && $_index->backlink === null
                 && $_page['node_parent'] !== null
             ) {
                 $parent = DB::queryRow("SELECT slug FROM " . DB::table('page') . " WHERE id=" . $_page['node_parent']);
                 $_index->backlink = Router::page($_page['node_parent'], $parent['slug']);
+            }
+
+            // articles
+            if (isset($_article) && $_index->backlink === null) {
+                $_index->backlink = Router::page($_page['id'], $_page['slug']);
             }
         }
     }
