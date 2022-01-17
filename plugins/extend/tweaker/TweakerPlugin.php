@@ -3,6 +3,8 @@
 namespace SunlightExtend\Tweaker;
 
 use Sunlight\Database\Database as DB;
+use Sunlight\Extend;
+use Sunlight\Plugin\Action\PluginAction;
 use Sunlight\Plugin\ExtendPlugin;
 use Sunlight\Router;
 use Sunlight\User;
@@ -11,21 +13,11 @@ use Sunlight\WebState;
 
 class TweakerPlugin extends ExtendPlugin
 {
-    protected function getConfigDefaults(): array
-    {
-        return [
-            'page_show_backlinks' => false,
-        ];
-    }
-
-    private function getIcon(string $name): string
-    {
-        return $this->getWebPath() . '/Resources/icons/' . $name . '.png';
-    }
 
     /**
      * Event to display page backlink, returns an interaction with the hierarchy.
      * This is a frequently requested remnant of Sunlight CMS 7.x.
+     *
      * @param array $args
      */
     public function onShowBacklink(array $args): void
@@ -50,7 +42,26 @@ class TweakerPlugin extends ExtendPlugin
     }
 
     /**
+     * Creating a backlink to any page of the system.
+     *
+     * Usage: In the page editing, in the 'Plugins' field, fill in 'backlink:' and then the address of the page
+     *        where the backlink is going.
+     * Example: 'backlink:gallery' (without quotes)
+     * @param array $args
+     */
+    public function onPageEvent(array $args): void
+    {
+        Extend::reg('tpl.backlink', function ($backlinkArgs) use ($args) {
+            if(!isset($args['arg'])){
+                return;
+            }
+            $backlinkArgs['backlink'] = _e(Router::slug($args['arg']));
+        });
+    }
+
+    /**
      * Event of adding a function buttons to editscripts
+     *
      * @param array $args
      */
     public function onPageEditScript(array $args): void
@@ -93,6 +104,36 @@ class TweakerPlugin extends ExtendPlugin
         $args['output'] .= "button.block img.icon {float: none; margin: 0; padding: 0 10px 0 0;}\n";
         $args['output'] .= "fieldset:target {border: 1px solid " . $GLOBALS['scheme_bar'] . ";}";
         $args['output'] .= "\n/* /Tweaker Plugin */\n";
+    }
+
+    private function getIcon(string $name): string
+    {
+        return $this->getWebPath() . '/Resources/icons/' . $name . '.png';
+    }
+
+    /**
+     * ============================================================================
+     *  EXTEND CONFIGURATION
+     * ============================================================================
+     */
+
+    /**
+     * Plugin config
+     * @return array
+     */
+    protected function getConfigDefaults(): array
+    {
+        return [
+            'page_show_backlinks' => false,
+        ];
+    }
+
+    public function getAction(string $name): ?PluginAction
+    {
+        if ($name === 'config') {
+            return new Configuration($this);
+        }
+        return parent::getAction($name);
     }
 
 }
