@@ -7,6 +7,7 @@ use Sunlight\Extend;
 use Sunlight\Plugin\Action\PluginAction;
 use Sunlight\Plugin\ExtendPlugin;
 use Sunlight\Router;
+use Sunlight\Template;
 use Sunlight\User;
 use Sunlight\Util\Request;
 use Sunlight\WebState;
@@ -23,7 +24,7 @@ class TweakerPlugin extends ExtendPlugin
     public function onShowBacklink(array $args): void
     {
         if ($this->getConfig()->offsetGet('page_show_backlinks')) {
-            global $_index, $_page, $_article;
+            global $_index, $_page;
 
             // pages
             if (($_index->type === WebState::PAGE || $_index->type === WebState::PLUGIN)
@@ -35,7 +36,7 @@ class TweakerPlugin extends ExtendPlugin
             }
 
             // articles
-            if (isset($_article) && $_index->backlink === null) {
+            if (Template::currentIsArticle() && $_index->backlink === null) {
                 $_index->backlink = Router::page($_page['id'], $_page['slug']);
             }
         }
