@@ -29,7 +29,7 @@ class TweakerPlugin extends ExtendPlugin
             // pages
             if (($_index->type === WebState::PAGE || $_index->type === WebState::PLUGIN)
                 && $_index->backlink === null
-                && $_page['node_parent'] !== null
+                && (isset($_page) && $_page['node_parent'] !== null)
             ) {
                 $parent = DB::queryRow("SELECT slug FROM " . DB::table('page') . " WHERE id=" . $_page['node_parent']);
                 $_index->backlink = Router::page($_page['node_parent'], $parent['slug']);
